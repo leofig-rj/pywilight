@@ -6,7 +6,7 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-version = '0.0.1'
+version = '0.0.26'
 
 setuptools.setup(
     name="pywilight",
@@ -16,7 +16,7 @@ setuptools.setup(
     description="Python client for WiLight",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url='https://github.com/leofig-rj/python-wilight',
+    url='https://github.com/leofig-rj/pywilight',
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

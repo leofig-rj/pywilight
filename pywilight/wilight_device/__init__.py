@@ -1,34 +1,37 @@
 """Base WiLight Device class."""
 
+import collections
 import logging
-#import time
+import sched
+import socket
+import time
+import threading
 
-from ..const import (
+import asyncio
+from collections import deque
+import logging
+import codecs
+import binascii
+
+from .const import (
     CONF_ITEMS,
     CONNECTION_TIMEOUT,
-    DATA_DEVICE_REGISTER,
     DEFAULT_KEEP_ALIVE_INTERVAL,
     DEFAULT_PORT,
     DEFAULT_RECONNECT_INTERVAL,
     DOMAIN,
     WL_TYPES,
 )
-from ..support import (
+from .support import (
     check_config_ex_len,
     get_item_sub_types,
     get_item_type,
     get_num_items,
 )
-#from ..protocol import WiLightClient  # noqa F401
+from .protocol import WiLightClient  # noqa F401
 
 
-LOG = logging.getLogger(__name__)
-
-
-class UnknownService(Exception):
-    """Exception raised when a non-existent service is called."""
-
-    pass
+_LOGGER = logging.getLogger(__name__)
 
 
 class Device(object):
@@ -46,21 +49,31 @@ class Device(object):
         self._retrying = False
         self._device_id = f"WL{serial_number}"
         self._name = f"WiLight Device - {serial_number}"
-        self._items = []
+        self._items = self._config_items()
         self._client = None
-        self._update_lock = None
-        # self._client = self._config_cliente()
+        self.status_callbacks = {}
 
-    def _config_cliente(self):
-        """Create WiLight Client Fake class."""
-        client = WiLightClientFake(device_id=None, host=None, port=None, model=None, config_ex=None,
-                            disconnect_callback=None,
-                            reconnect_callback=None,
-                            loop=None, logger=None,
-                            timeout=1000, reconnect_interval=1000,
-                            keep_alive_interval=1000)
+    async def config_client(self, disconnect_callback=None,
+                                reconnect_callback=None, loop=None,
+                                logger=None):
+        """Create WiLight Client class."""
+        self._client = WiLightClient(
+                            device_id = self._device_id,
+                            host = self._host,
+                            port = self.port,
+                            model = self._type,
+                            config_ex = self._mode,
+                            disconnect_callback = disconnect_callback,
+                            reconnect_callback = reconnect_callback,
+                            loop = loop,
+                            logger = logger,
+                            timeout = CONNECTION_TIMEOUT,
+                            reconnect_interval = DEFAULT_RECONNECT_INTERVAL,
+                            keep_alive_interval = DEFAULT_KEEP_ALIVE_INTERVAL)
 
-        return client
+        await self._client.setup()
+
+        return self._client
 
     def _config_items(self):
         """
@@ -68,7 +81,8 @@ class Device(object):
 
         I configure the items according to the input data.
         """
-        self._items = []
+        #self._items = []
+        items = []
 
         if self._type not in WL_TYPES:
             _LOGGER.warning("WiLight %s with unsupported type %s", device_id, self._type)
@@ -95,7 +109,9 @@ class Device(object):
             item["name"] = item_name
             item["type"] = item_type
             item["sub_type"] = item_sub_type
-            self._items.append(item)
+            items.append(item)
+
+        return items
 
     def _reconnect_with_device_by_discovery(self):
         """
@@ -114,7 +130,7 @@ class Device(object):
             return
 
         self._retrying = True
-        LOG.info("Trying to reconnect with %s", self._name)
+        _LOGGER.info("Trying to reconnect with %s", self._name)
         # We will try to find it 5 times, each time we wait a bigger interval
         try_no = 0
 
@@ -123,23 +139,23 @@ class Device(object):
                                      match_serial=self.serialnumber)
 
             if found:
-                LOG.info("Found %s again, updating local values", self._name)
+                _LOGGER.info("Found %s again, updating local values", self._name)
 
                 # pylint: disable=attribute-defined-outside-init
                 self.__dict__ = found[0].__dict__
                 self._retrying = False
-                self._config_items()
+                #self._config_items()
 
                 return
 
             wait_time = try_no * 5
 
-            LOG.info(
+            _LOGGER.info(
                 "%s Not found in try %i. Trying again in %i seconds",
                 self._name, try_no, wait_time)
 
             if try_no == 5:
-                LOG.error(
+                _LOGGER.error(
                     "Unable to reconnect with %s in 5 tries. Stopping.",
                     self._name)
                 self._retrying = False
@@ -156,17 +172,13 @@ class Device(object):
             if (self.serialnumber):
                 self._reconnect_with_device_by_discovery()
         else:
-            LOG.warning("Rediscovery was requested for device %s, "
+            _LOGGER.warning("Rediscovery was requested for device %s, "
                         "but rediscovery is disabled. Ignoring request.",
                         self._name)
 
-    def set_update_lock(self, update_lock=None):
-        """Set client connection for WiLight device."""
-        self._update_lock = update_lock
-
-    def set_client(self, client=None):
-        """Set client connection for WiLight device."""
-        self._client = client
+    #def register_status_callback(self, callback, index):
+    #    """Register a callback which will fire when state changes."""
+    #    self.status_callbacks[index].callback
 
     @property
     def host(self):
@@ -199,11 +211,6 @@ class Device(object):
         return self._key
 
     @property
-    def update_lock(self):
-        """Return the update_lock of the device."""
-        return self._update_lock
-
-    @property
     def client(self):
         """Return the client of the device."""
         return self._client
@@ -211,7 +218,7 @@ class Device(object):
     @property
     def items(self):
         """Return the items of the device."""
-        self._config_items()
+        #self._config_items()
         return self._items
 
     @property

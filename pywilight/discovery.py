@@ -78,6 +78,12 @@ def wilight_from_model_serial_and_location(location, model, serial_number, key,
     mode = type_mode[1]
     #print("mode :", mode)
 
-    #return {"serial_number": serial_number, "host": host, "type": type, "mode": mode, "key": key}
-    return Device(host=host, serial_number=serial_number, type=type, mode=mode,
+    device = Device(host=host, serial_number=serial_number, type=type, mode=mode,
                     key=key, rediscovery_enabled=rediscovery_enabled)
+    # device._config_items()
+
+
+    #return {"serial_number": serial_number, "host": host, "type": type, "mode": mode, "key": key}
+    #return Device(host=host, serial_number=serial_number, type=type, mode=mode,
+    #                key=key, rediscovery_enabled=rediscovery_enabled)
+    return device

@@ -1,6 +1,5 @@
 """Constants for wilight platform."""
 
-DATA_DEVICE_REGISTER = "wilight_device_register"
 DEFAULT_RECONNECT_INTERVAL = 15
 DEFAULT_KEEP_ALIVE_INTERVAL = 12
 CONNECTION_TIMEOUT = 15
