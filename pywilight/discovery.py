@@ -67,8 +67,10 @@ def wilight_from_model_serial_and_location(location, model, serial_number, key,
         return None
     host = location.split('/', 3)[2].split(':', 1)[0]
     type_mode = model.split(' ', 1)[1].split('-', 1)
-    type = type_mode[0]
+    type = type_mode[0][0:4]
+    swversion = type_mode[0][4:16]
     mode = type_mode[1]
 
-    return Device(host=host, serial_number=serial_number, type=type, mode=mode,
+    return Device(host=host, serial_number=serial_number, type=type,
+                    swversion=swversion,mode=mode,
                     key=key, rediscovery_enabled=rediscovery_enabled)
