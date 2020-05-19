@@ -6,14 +6,14 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-version = '0.0.26'
+version = '0.0.27'
 
 setuptools.setup(
     name="pywilight",
     version=version,
     author="Leonardo Figueiro",
     author_email="leoagfig@gmail.com",
-    description="Python client for WiLight",
+    description="Python API for WiLight in Home Assistant",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url='https://github.com/leofig-rj/pywilight',

@@ -277,7 +277,6 @@ def scan(st=None, timeout=DISCOVER_TIMEOUT,
                     device = entry.description.get('device', {})
                     #print("device :", device)
                     serial = device.get('serialNumber')
-                    #print("serial :", serial)
                 else:
                     serial = None
 

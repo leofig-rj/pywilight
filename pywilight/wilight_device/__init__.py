@@ -144,7 +144,6 @@ class Device(object):
                 # pylint: disable=attribute-defined-outside-init
                 self.__dict__ = found[0].__dict__
                 self._retrying = False
-                #self._config_items()
 
                 return
 
@@ -175,10 +174,6 @@ class Device(object):
             _LOGGER.warning("Rediscovery was requested for device %s, "
                         "but rediscovery is disabled. Ignoring request.",
                         self._name)
-
-    #def register_status_callback(self, callback, index):
-    #    """Register a callback which will fire when state changes."""
-    #    self.status_callbacks[index].callback
 
     @property
     def host(self):
@@ -218,7 +213,6 @@ class Device(object):
     @property
     def items(self):
         """Return the items of the device."""
-        #self._config_items()
         return self._items
 
     @property
