@@ -1,4 +1,5 @@
-# Python API for WiLight devices in Home Assistant
+pyWiLight |Build Status|
+=====================
 
 A simple Python API for controlling devices from WiLight, developed for integration with Home Assistant. At present, the following devices are currently supported:
 
@@ -11,3 +12,7 @@ A simple Python API for controlling devices from WiLight, developed for integrat
 
 Discovery based on [pywemo](https://github.com/pavoni/pywemo).
 Thanks to the contributors.
+
+
+.. |Build Status| image:: https://travis-ci.org/pavoni/pywemo.svg?branch=master
+   :target: https://travis-ci.org/pavoni/pywemo
