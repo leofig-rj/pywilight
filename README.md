@@ -1,3 +1,6 @@
+pyWiLight |Build Status| image:: https://travis-ci.org/leofig-rj/pywilight.svg?branch=master
+   :target: https://travis-ci.org/leofig-rj/pywilight
+=====================
 # Python API for WiLight devices in Home Assistant
 
 A simple Python API for controlling devices from WiLight, developed for integration with Home Assistant. At present, the following devices are currently supported:
