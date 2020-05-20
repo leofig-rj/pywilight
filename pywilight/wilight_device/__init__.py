@@ -37,10 +37,11 @@ _LOGGER = logging.getLogger(__name__)
 class Device(object):
     """Base object for WiLight devices."""
 
-    def __init__(self, host, serial_number, type, swversion, mode, key, rediscovery_enabled=True):
+    def __init__(self, host, mac, serial_number, type, swversion, mode, key, rediscovery_enabled=True):
         """Create a WiLight device."""
         self._host = host
         self._port = 46000
+        self._mac = mac
         self._serial_number = serial_number
         self._type = type
         self._swversion = swversion
@@ -185,6 +186,11 @@ class Device(object):
     def port(self):
         """Return the port of the device."""
         return self._port
+
+    @property
+    def mac(self):
+        """Return the mac of the device."""
+        return self._mac
 
     @property
     def serial_number(self):

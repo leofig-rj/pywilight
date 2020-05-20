@@ -39,6 +39,7 @@ def discover_devices(ssdp_st=None, max_devices=None,
 def device_from_description(description_url, serialNumber, rediscovery_enabled=True):
     """Return object representing WiLight device running at host, else None."""
     xml = requests.get(description_url, timeout=10)
+    mac = deviceParser.parseString(xml.content).device.macAddress
     model = deviceParser.parseString(xml.content).device.modelName
     serial_number = serialNumber or deviceParser.parseString(xml.content).device.serialNumber
     key = deviceParser.parseString(xml.content).device.modelNumber
@@ -49,13 +50,17 @@ def device_from_description(description_url, serialNumber, rediscovery_enabled=T
             description_url)
 
     return wilight_from_model_serial_and_location(
-        description_url, model, serial_number, key,
+        description_url, mac, model, serial_number, key,
         rediscovery_enabled=rediscovery_enabled)
 
-def wilight_from_model_serial_and_location(location, model, serial_number, key,
+def wilight_from_model_serial_and_location(location, mac, model, serial_number, key,
                                   rediscovery_enabled=True):
     """Create device class based on the device input data."""
+    if mac is None:
+        return None
     if model is None:
+        return None
+    if len(mac) < 17:
         return None
     if len(model) < 15:
         return None
@@ -71,6 +76,6 @@ def wilight_from_model_serial_and_location(location, model, serial_number, key,
     swversion = type_mode[0][4:16]
     mode = type_mode[1]
 
-    return Device(host=host, serial_number=serial_number, type=type,
+    return Device(host=host, mac=mac, serial_number=serial_number, type=type,
                     swversion=swversion,mode=mode,
                     key=key, rediscovery_enabled=rediscovery_enabled)
