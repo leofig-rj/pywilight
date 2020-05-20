@@ -147,7 +147,7 @@ class UPNPEntry:
 
             except XMLElementTree.ParseError:
                 # There used to be a log message here to record an error about
-                # malformed XML, but this only happens on non-WeMo devices
+                # malformed XML, but this only happens on non-WiLight devices
                 # and can be safely ignored.
                 UPNPEntry.DESCRIPTION_CACHE[url] = {}
 
@@ -243,7 +243,7 @@ def scan(st=None, timeout=DISCOVER_TIMEOUT,
                 sockets.append(s)
                 s.bind((addr, 0))
 
-                # Send 2 separate ssdp requests to mimic wemo app behavior:
+                # Send 2 separate ssdp requests:
                 ssdp_request = build_ssdp_request(st, ssdp_mx=1)
                 s.sendto(ssdp_request, ssdp_target)
 

@@ -77,5 +77,5 @@ def wilight_from_model_serial_and_location(location, mac, model, serial_number, 
     mode = type_mode[1]
 
     return Device(host=host, mac=mac, serial_number=serial_number, type=type,
-                    swversion=swversion,mode=mode,
+                    swversion=swversion, mode=mode,
                     key=key, rediscovery_enabled=rediscovery_enabled)

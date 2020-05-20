@@ -8,3 +8,6 @@ A simple Python API for controlling devices from WiLight, developed for integrat
 - V-104
 - R-105
 - I-107
+
+Discovery based on [pywemo](https://github.com/pavoni/pywemo).
+Thanks to the contributors.
