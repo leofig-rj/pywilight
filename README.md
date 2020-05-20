@@ -11,3 +11,6 @@ A simple Python API for controlling devices from WiLight, developed for integrat
 
 Discovery based on [pywemo](https://github.com/pavoni/pywemo).
 Thanks to the contributors.
+
+.. |Build Status| image:: https://travis-ci.org/leofig-rj/pywilight.svg?branch=master
+   :target: https://travis-ci.org/leofig-rj/pywilight
