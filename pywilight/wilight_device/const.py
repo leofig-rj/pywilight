@@ -50,7 +50,7 @@ COVER_STOP = "stop"
 # Cover status
 STATE_MOTOR_STOPPED = "stopped"
 
-WL_TYPES = [
+WL_MODELS = [
     "0001",
     "0002",
     "0100",

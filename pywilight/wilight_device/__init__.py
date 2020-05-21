@@ -20,7 +20,7 @@ from .const import (
     DEFAULT_PORT,
     DEFAULT_RECONNECT_INTERVAL,
     DOMAIN,
-    WL_TYPES,
+    WL_MODELS,
 )
 from .support import (
     check_config_ex_len,
@@ -37,15 +37,15 @@ _LOGGER = logging.getLogger(__name__)
 class Device(object):
     """Base object for WiLight devices."""
 
-    def __init__(self, host, mac, serial_number, type, swversion, mode, key, rediscovery_enabled=True):
+    def __init__(self, host, mac, serial_number, model, swversion, config, key, rediscovery_enabled=True):
         """Create a WiLight device."""
         self._host = host
         self._port = 46000
         self._mac = mac
         self._serial_number = serial_number
-        self._type = type
+        self._model = model
         self._swversion = swversion
-        self._mode = mode
+        self._config = config
         self._key = key
         self.rediscovery_enabled = rediscovery_enabled
         self._retrying = False
@@ -62,9 +62,9 @@ class Device(object):
         self._client = WiLightClient(
                             device_id = self._device_id,
                             host = self._host,
-                            port = self.port,
-                            model = self._type,
-                            config_ex = self._mode,
+                            port = self._port,
+                            model = self._model,
+                            config_ex = self._config,
                             disconnect_callback = disconnect_callback,
                             reconnect_callback = reconnect_callback,
                             loop = loop,
@@ -86,26 +86,26 @@ class Device(object):
         #self._items = []
         items = []
 
-        if self._type not in WL_TYPES:
-            _LOGGER.warning("WiLight %s with unsupported type %s", device_id, self._type)
+        if self._model not in WL_MODELS:
+            _LOGGER.warning("WiLight %s with unsupported model %s", device_id, self._model)
             return
 
-        if not check_config_ex_len(self._type, self._mode):
-            _LOGGER.warning("WiLight %s with error in mode %s", device_id, self._mode)
+        if not check_config_ex_len(self._model, self._config):
+            _LOGGER.warning("WiLight %s with error in config %s", device_id, self._config)
             return
 
         def get_item_name(s_i):
             """Get item name."""
             return f"{self._device_id}_{s_i}"
 
-        num_items = get_num_items(self._type, self._mode)
+        num_items = get_num_items(self._model, self._config)
 
         for i in range(0, num_items):
 
             index = f"{i:01x}"
             item_name = get_item_name(f"{i+1:01x}")
-            item_type = get_item_type(i+1, self._type, self._mode)
-            item_sub_type = get_item_sub_types(i+1, self._type, self._mode)
+            item_type = get_item_type(i+1, self._model, self._config)
+            item_sub_type = get_item_sub_types(i+1, self._model, self._config)
             item = {}
             item["index"] = index
             item["name"] = item_name
@@ -198,9 +198,9 @@ class Device(object):
         return self._serial_number
 
     @property
-    def type(self):
-        """Return the type of the device."""
-        return self._type
+    def model(self):
+        """Return the model of the device."""
+        return self._model
 
     @property
     def swversion(self):
@@ -208,9 +208,9 @@ class Device(object):
         return self._swversion
 
     @property
-    def mode(self):
-        """Return the mode of the device."""
-        return self._mode
+    def config(self):
+        """Return the config of the device."""
+        return self._config
 
     @property
     def key(self):

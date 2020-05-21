@@ -40,7 +40,7 @@ def device_from_description(description_url, serialNumber, rediscovery_enabled=T
     """Return object representing WiLight device running at host, else None."""
     xml = requests.get(description_url, timeout=10)
     mac = deviceParser.parseString(xml.content).device.macAddress
-    model = deviceParser.parseString(xml.content).device.modelName
+    model_in = deviceParser.parseString(xml.content).device.modelName
     serial_number = serialNumber or deviceParser.parseString(xml.content).device.serialNumber
     key = deviceParser.parseString(xml.content).device.modelNumber
 
@@ -50,19 +50,19 @@ def device_from_description(description_url, serialNumber, rediscovery_enabled=T
             description_url)
 
     return wilight_from_model_serial_and_location(
-        description_url, mac, model, serial_number, key,
+        description_url, mac, model_in, serial_number, key,
         rediscovery_enabled=rediscovery_enabled)
 
-def wilight_from_model_serial_and_location(location, mac, model, serial_number, key,
+def wilight_from_model_serial_and_location(location, mac, model_in, serial_number, key,
                                   rediscovery_enabled=True):
     """Create device class based on the device input data."""
     if mac is None:
         return None
-    if model is None:
+    if model_in is None:
         return None
     if len(mac) < 17:
         return None
-    if len(model) < 15:
+    if len(model_in) < 15:
         return None
     if serial_number is None:
         return None
@@ -71,11 +71,11 @@ def wilight_from_model_serial_and_location(location, mac, model, serial_number, 
     if location is None:
         return None
     host = location.split('/', 3)[2].split(':', 1)[0]
-    type_mode = model.split(' ', 1)[1].split('-', 1)
-    type = type_mode[0][0:4]
-    swversion = type_mode[0][4:16]
-    mode = type_mode[1]
+    model_config = model_in.split(' ', 1)[1].split('-', 1)
+    model = model_config[0][0:4]
+    swversion = model_config[0][4:16]
+    config = model_config[1]
 
-    return Device(host=host, mac=mac, serial_number=serial_number, type=type,
-                    swversion=swversion, mode=mode,
+    return Device(host=host, mac=mac, serial_number=serial_number, model=model,
+                    swversion=swversion, config=config,
                     key=key, rediscovery_enabled=rediscovery_enabled)
