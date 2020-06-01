@@ -38,7 +38,7 @@ def check_config_ex_len(model, config_ex):
         if len(config_ex) == 2:
             return True
     elif model == "0105":
-        if len(config_ex) == 2:
+        if len(config_ex) == 14:
             return True
     elif model == "0107":
         if len(config_ex) == 5:

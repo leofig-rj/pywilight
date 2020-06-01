@@ -87,11 +87,11 @@ class Device(object):
         items = []
 
         if self._model not in WL_MODELS:
-            _LOGGER.warning("WiLight %s with unsupported model %s", device_id, self._model)
+            _LOGGER.warning("WiLight %s with unsupported model %s", self.device_id, self._model)
             return
 
         if not check_config_ex_len(self._model, self._config):
-            _LOGGER.warning("WiLight %s with error in config %s", device_id, self._config)
+            _LOGGER.warning("WiLight %s with error in config %s", self.device_id, self._config)
             return
 
         def get_item_name(s_i):
