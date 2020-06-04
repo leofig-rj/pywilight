@@ -154,3 +154,23 @@ def get_item_sub_types(item, model, config_ex):
         if item == 1:
             return LIGHT_COLOR
     return LIGHT_NONE
+
+def get_components_from_model(item, model_name):
+    components = []
+
+    if model_name is None:
+        return []
+    if len(model_name) < 15:
+        return []
+    model_config = model_name.split(' ', 1)[1].split('-', 1)
+    model = model_config[0][0:4]
+    config = model_config[1]
+    if not check_config_ex_len(model, config):
+        return []
+    num_items = get_num_items(model, config)
+    for item in range(1, num_items + 1):
+        component = get_item_type(item, model, config)
+        if component != ITEM_NONE:
+            components.append(component)
+
+    return components
