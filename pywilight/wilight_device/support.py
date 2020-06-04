@@ -155,7 +155,7 @@ def get_item_sub_types(item, model, config_ex):
             return LIGHT_COLOR
     return LIGHT_NONE
 
-def get_components_from_model(item, model_name):
+def get_components_from_model(model_name):
     components = []
 
     if model_name is None:
