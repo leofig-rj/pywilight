@@ -53,12 +53,17 @@ class Device(object):
         self._name = f"WiLight Device - {serial_number}"
         self._items = self._config_items()
         self._client = None
+        self._dummy = None
         self.status_callbacks = {}
 
     async def config_client(self, disconnect_callback=None,
                                 reconnect_callback=None, loop=None,
                                 logger=None):
         """Create WiLight Client class."""
+        if self._dummy is not None:
+            self._client = self._dummy
+            return self._client
+
         self._client = WiLightClient(
                             device_id = self._device_id,
                             host = self._host,
@@ -177,6 +182,9 @@ class Device(object):
                         "but rediscovery is disabled. Ignoring request.",
                         self._name)
 
+    def set_dummy(self, dummy):
+        self._dummy = dummy
+
     @property
     def host(self):
         """Return the host of the device."""
@@ -236,3 +244,8 @@ class Device(object):
     def device_id(self):
         """Return the device_id of the device."""
         return self._device_id
+
+    @property
+    def dummy(self):
+        """Return the dummy of the device."""
+        return self._dummy
