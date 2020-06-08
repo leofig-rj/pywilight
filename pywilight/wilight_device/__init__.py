@@ -28,7 +28,7 @@ from .support import (
     get_item_type,
     get_num_items,
 )
-from .protocol import WiLightClient  # noqa F401
+from .protocol import WiLightClient, DummyClient  # noqa F401
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -53,15 +53,19 @@ class Device(object):
         self._name = f"WiLight Device - {serial_number}"
         self._items = self._config_items()
         self._client = None
-        self._dummy = None
+        self._dummy = False
         self.status_callbacks = {}
 
     async def config_client(self, disconnect_callback=None,
                                 reconnect_callback=None, loop=None,
                                 logger=None):
         """Create WiLight Client class."""
-        if self._dummy is not None:
-            self._client = self._dummy
+        if self._dummy:
+            self._client = DummyClient(
+                model = self._model,
+                config_ex = self._config,
+            )
+            
             return self._client
 
         self._client = WiLightClient(

@@ -49,11 +49,11 @@ def device_from_description(description_url, serialNumber, rediscovery_enabled=T
             'No serial number was supplied or found in setup xml at: %s.',
             description_url)
 
-    return wilight_from_model_serial_and_location(
+    return wilight_from_discovery(
         description_url, mac, model_in, serial_number, key,
         rediscovery_enabled=rediscovery_enabled)
 
-def wilight_from_model_serial_and_location(location, mac, model_in, serial_number, key,
+def wilight_from_discovery(location, mac, model_in, serial_number, key,
                                   rediscovery_enabled=True):
     """Create device class based on the device input data."""
     if mac is None:

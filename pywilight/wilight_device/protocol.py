@@ -5,6 +5,12 @@ import logging
 import codecs
 import binascii
 
+from .support import (
+    check_config_ex_len,
+    get_item_sub_types,
+    get_num_items,
+    get_states_from_sum_item,
+)
 
 class WiLightProtocol(asyncio.Protocol):
     """WiLight device control protocol."""
@@ -416,7 +422,7 @@ class WiLightClient:
                  disconnect_callback=None, reconnect_callback=None,
                  loop=None, logger=None, timeout=None, reconnect_interval=None,
                  keep_alive_interval=None):
-        """Initialize the WiLight client wrapper."""
+        # Initialize the WiLight client wrapper.
         if loop:
             self.loop = loop
         else:
@@ -616,3 +622,126 @@ class WiLightClient:
         """Get current device status."""
         packet = self.protocol.format_packet("000000", self.num_serial)
         await self._send(packet)
+
+# pylint: disable=missing-class-docstring
+# pylint: disable=missing-function-docstring
+class DummyClient:
+    """Dummy client wrapper class."""
+    def __init__(self, model=None, config_ex=None):
+        self._model = model
+        self._config_ex = config_ex
+        self._is_connected = True
+        self._status = {}
+        self._status_callbacks = {}
+        self._config_status()
+
+    def _config_status(self):
+        self._status = {}
+
+        if self._model not in WL_MODELS:
+            return
+
+        if not check_config_ex_len(self._model, self._config):
+            return
+
+        num_items = get_num_items(self._model, self._config)
+
+        for i in range(0, num_items):
+            index = f"{i:01x}"
+            item_sub_type = get_item_sub_types(i+1, self._model, self._config)
+            state = get_states_from_sum_item(item_sub_type)
+            self._status[index] = state
+
+    async def _update(self, index=None):
+        self._status_callbacks[index](self._status[index])
+
+    def register_status_callback(self, callback, index):
+        """Register a callback which will fire when state changes."""
+        self._status_callbacks[index] = callback
+
+    def stop(self):
+        pass
+
+    def set_status(self, status, index):
+        """Inicializa estado para o index"""
+        self._status[index] = status
+
+    def set_is_connected(self, connected):
+        self._is_connected = connected
+
+    @property
+    def is_connected(self):
+        return self._is_connected
+
+    async def status(self, index=None):
+        if index is not None:
+            await self._update(index)
+
+    async def turn_on(self, index=None):
+        if index is not None:
+            self._status[index]["on"] = True
+            await self._update(index)
+
+    async def turn_off(self, index=None):
+        if index is not None:
+            self._status[index]["on"] = False
+            await self._update(index)
+
+    async def set_brightness(self, index=None, brightness=None):
+        if (index is not None and brightness is not None):
+            self._status[index]["brightness"] = brightness
+            await self._update(index)
+
+    async def set_hs_color(self, index=None, hue=None, saturation=None):
+        if (index is not None and hue is not None and saturation is not None):
+            self._status[index]["hue"] = hue
+            self._status[index]["saturation"] = saturation
+            await self._update(index)
+
+    async def set_hsb_color(
+        self, index=None, hue=None, saturation=None, brightness=None
+    ):
+        if (index is not None and hue is not None and saturation is not None and brightness is not None):
+            self._status[index]["hue"] = hue
+            self._status[index]["saturation"] = saturation
+            self._status[index]["brightness"] = brightness
+            await self._update(index)
+
+    async def cover_command(self, index=None, cv_command=None):
+        """Send cover command."""
+        if (index is not None and cv_command is not None):
+            if cv_command == "open":
+                motor_state = "opening"
+                position_target = 0
+            elif cv_command == "close":
+                motor_state = "closing"
+                position_target = 255
+            elif cv_command == "stop":
+                motor_state = "stopped"
+                position_target = 127
+            self._status[index]["motor_state"] = motor_state
+            self._status[index]["position_target"] = position_target
+            self._status[index]["position_current"] = 127
+            await self._update(index)
+
+    async def set_cover_position(self, index=None, position=None):
+        if (index is not None and position is not None):
+            self._status[index]["motor_state"] = stopped
+            self._status[index]["position_target"] = position
+            self._status[index]["position_current"] = position
+            await self._update(index)
+
+    async def set_fan_direction(self, index=None, direction=None):
+        if (index is not None and direction is not None):
+            self._status[index]["direction"] = direction
+            await self._update(index)
+
+    async def set_fan_speed(self, index=None, speed=None):
+        if (index is not None and speed is not None):
+            self._status[index]["speed"] = speed
+            await self._update(index)
+
+    async def set_switch_time(self, index=None, target_time=None):
+        if (index is not None and target_time is not None):
+            self._status[index]["timer_target"] = target_time
+            await self._update(index)

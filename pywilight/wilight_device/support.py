@@ -121,7 +121,7 @@ def get_item_type(item, model, config_ex):
 
 
 def get_item_sub_types(item, model, config_ex):
-    """Get slot type."""
+    """Get sub type."""
     if model == "0001":
         if item == 1:
             return LIGHT_ON_OFF
@@ -154,6 +154,49 @@ def get_item_sub_types(item, model, config_ex):
         if item == 1:
             return LIGHT_COLOR
     return LIGHT_NONE
+
+def get_states_from_sum_item(sub_item):
+    """Get state for sub_item."""
+    if sub_item == LIGHT_ON_OFF:
+        return {
+            "on": False,
+        }
+    elif sub_item == LIGHT_DIMMER:
+        return {
+            "on": False,
+            "brightness": 0,
+        }
+    elif sub_item == LIGHT_COLOR:
+        return {
+            "on": False,
+            "hue": 0,
+            "saturation": 100,
+            "brightness": 0,
+        }
+    elif sub_item == COVER_V1:
+        return {
+            "motor_state": "stopped",
+            "position_target": 0,
+            "position_current": 0
+        }
+    elif sub_item == FAN_V1:
+        return {
+            "direction": "off",
+            "speed": "low"
+        }
+    elif sub_item == SWITCH_VALVE:
+        return {
+            "on": False,
+            "timer_target": 30,
+            "timer_current": 0
+        }
+    elif sub_item == SWITCH_PAUSE_VALVE:
+        return {
+            "on": False,
+            "timer_target": 43200,
+            "timer_current": 0
+        }
+    return {}
 
 def get_components_from_model(model_name):
     components = []
