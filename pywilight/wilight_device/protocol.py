@@ -693,6 +693,10 @@ class DummyClient:
     async def set_brightness(self, index=None, brightness=None):
         if (index is not None and brightness is not None):
             self._status[index]["brightness"] = brightness
+            if brightness == 0:
+                self._status[index]["on"] = False
+            else:
+                self._status[index]["on"] = True
             await self._update(index)
 
     async def set_hs_color(self, index=None, hue=None, saturation=None):
@@ -708,6 +712,10 @@ class DummyClient:
             self._status[index]["hue"] = hue
             self._status[index]["saturation"] = saturation
             self._status[index]["brightness"] = brightness
+            if brightness == 0:
+                self._status[index]["on"] = False
+            else:
+                self._status[index]["on"] = True
             await self._update(index)
 
     async def cover_command(self, index=None, cv_command=None):
