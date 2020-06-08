@@ -631,18 +631,18 @@ class DummyClient:
         self._model = model
         self._config_ex = config_ex
         self._is_connected = True
-        self._status = {}
+        self._status = self._config_status()
         self._status_callbacks = {}
         self._config_status()
 
     def _config_status(self):
-        self._status = {}
+        status = {}
 
         if self._model not in WL_MODELS:
-            return
+            return status
 
         if not check_config_ex_len(self._model, self._config):
-            return
+            return status
 
         num_items = get_num_items(self._model, self._config)
 
@@ -650,7 +650,9 @@ class DummyClient:
             index = f"{i:01x}"
             item_sub_type = get_item_sub_types(i+1, self._model, self._config)
             state = get_states_from_sum_item(item_sub_type)
-            self._status[index] = state
+            status[index] = state
+
+        return status
 
     async def _update(self, index=None):
         self._status_callbacks[index](self._status[index])

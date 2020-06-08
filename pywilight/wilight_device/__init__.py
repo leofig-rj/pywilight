@@ -9,7 +9,6 @@ import threading
 
 import asyncio
 from collections import deque
-import logging
 import codecs
 import binascii
 
@@ -63,9 +62,9 @@ class Device(object):
         if self._dummy:
             self._client = DummyClient(
                 model = self._model,
-                config_ex = self._config,
+                config_ex = self._config
             )
-            
+
             return self._client
 
         self._client = WiLightClient(
