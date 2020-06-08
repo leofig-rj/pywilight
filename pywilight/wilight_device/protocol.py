@@ -642,14 +642,14 @@ class DummyClient:
         if self._model not in WL_MODELS:
             return status
 
-        if not check_config_ex_len(self._model, self._config):
+        if not check_config_ex_len(self._model, self._config_ex):
             return status
 
-        num_items = get_num_items(self._model, self._config)
+        num_items = get_num_items(self._model, self._config_ex)
 
         for i in range(0, num_items):
             index = f"{i:01x}"
-            item_sub_type = get_item_sub_types(i+1, self._model, self._config)
+            item_sub_type = get_item_sub_types(i+1, self._model, self._config_ex)
             state = get_states_from_sum_item(item_sub_type)
             status[index] = state
 
