@@ -5,7 +5,7 @@ import logging
 import codecs
 import binascii
 
-from .const import WL_MODELS
+from ..const import WL_MODELS
 from .support import (
     check_config_ex_len,
     get_item_sub_types,

@@ -12,7 +12,7 @@ from collections import deque
 import codecs
 import binascii
 
-from .const import (
+from ..const import (
     CONF_ITEMS,
     CONNECTION_TIMEOUT,
     DEFAULT_KEEP_ALIVE_INTERVAL,

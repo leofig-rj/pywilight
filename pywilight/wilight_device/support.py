@@ -1,6 +1,6 @@
 """Support functions for wilight platform."""
 
-from .const import (
+from ..const import (
     COVER_V1,
     FAN_V1,
     ITEM_COVER,
@@ -43,6 +43,9 @@ def check_config_ex_len(model, config_ex):
     elif model == "0107":
         if len(config_ex) == 5:
             return True
+    elif model == "0110":
+        if len(config_ex) == 3:
+            return True
     return False
 
 
@@ -70,6 +73,8 @@ def get_num_items(model, config_ex):
     elif model == "0105":
         return 2
     elif model == "0107":
+        return 1
+    elif model == "0110":
         return 1
     return num_items
 
@@ -117,6 +122,9 @@ def get_item_type(item, model, config_ex):
     elif model == "0107":
         if item == 1:
             return ITEM_LIGHT
+    elif model == "0110":
+        if item == 1:
+            return ITEM_LIGHT
     return ITEM_NONE
 
 
@@ -153,6 +161,12 @@ def get_item_sub_types(item, model, config_ex):
     elif model == "0107":
         if item == 1:
             return LIGHT_COLOR
+    elif model == "0110":
+        if item == 1:
+            if config_ex[0] == "0":
+                return LIGHT_ON_OFF
+            elif config_ex[0] == "1":
+                return LIGHT_DIMMER
     return LIGHT_NONE
 
 def get_states_from_sum_item(sub_item):
