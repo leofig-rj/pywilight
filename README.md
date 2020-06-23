@@ -8,6 +8,7 @@ A simple Python API for controlling devices from WiLight, developed for integrat
 - V-104
 - R-105
 - I-107
+- I-110
 
 TCP client with some ideas of [hlk-sw16](https://github.com/jameshilliard/hlk-sw16).
 Discovery based on [pywemo](https://github.com/pavoni/pywemo).

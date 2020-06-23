@@ -98,6 +98,9 @@ class WiLightProtocol(asyncio.Protocol):
         elif self.client.model == "0107":
             if len(packet) < 40:
                 return False
+        elif self.client.model == "0110":
+            if len(packet) < 40:
+                return False
         b_num_serial = self.client.num_serial.encode()
         for i in range(0, 12):
             if packet[i + 1] != b_num_serial[i]:
@@ -122,6 +125,8 @@ class WiLightProtocol(asyncio.Protocol):
             self._handle_0105_packet(packet)
         elif self.client.model == "0107":
             self._handle_0107_packet(packet)
+        elif self.client.model == "0110":
+            self._handle_0110_packet(packet)
 
     def _handle_0001_packet(self, packet):
         """Parse incoming packet."""
@@ -387,6 +392,35 @@ class WiLightProtocol(asyncio.Protocol):
             if changed:
                 changes.append(format(index, 'x'))
                 self.client.states[format(index, 'x')] = {"on": on, "hue": hue, "saturation": saturation, "brightness": brightness}
+
+        self._handle_packet_end(states, changes)
+
+    def _handle_0110_packet(self, packet):
+        """Parse incoming packet."""
+        states = {}
+        changes = []
+        for index in range(0, 1):
+
+            client_state = self.client.states.get(format(index, 'x'), None)
+            if client_state is None:
+                client_state = {}
+            on = (packet[23:24] == b'1')
+            brightness = int(packet[24:27])
+            states[format(index, 'x')] = {"on": on, "brightness": brightness}
+            changed = False
+            if ("on" in client_state):
+                if (client_state["on"] is not on):
+                    changed = True
+            else:
+                changed = True
+            if ("brightness" in client_state):
+                if (client_state["brightness"] != brightness):
+                    changed = True
+            else:
+                changed = True
+            if changed:
+                changes.append(format(index, 'x'))
+                self.client.states[format(index, 'x')] = {"on": on, "brightness": brightness}
 
         self._handle_packet_end(states, changes)
 
