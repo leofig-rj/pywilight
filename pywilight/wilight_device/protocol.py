@@ -65,8 +65,8 @@ class WiLightProtocol(asyncio.Protocol):
         self._buffer = data
         if self._valid_packet(self, self._buffer):
             self._handle_packet(self._buffer)
-        else:
-            if self._buffer[0:1] != b'%':
+#        else:
+#            if self._buffer[0:1] != b'%':
 #                self.logger.debug('WiLight %s dropping invalid data: %s', self.client.num_serial, self._buffer)
 
     @staticmethod
