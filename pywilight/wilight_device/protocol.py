@@ -515,7 +515,7 @@ class WiLightClient:
                 if self.reconnect_callback:
                     self.reconnect_callback()
                 break
-            if !reconnect:
+            if not reconnect:
                 break
 #            await asyncio.sleep(self.reconnect_interval)
             await asyncio.sleep(0.1)
