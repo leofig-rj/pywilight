@@ -67,7 +67,7 @@ class WiLightProtocol(asyncio.Protocol):
             self._handle_packet(self._buffer)
         else:
             if self._buffer[0:1] != b'%':
-                self.logger.debug('WiLight %s dropping invalid data: %s', self.client.num_serial, self._buffer)
+#                self.logger.debug('WiLight %s dropping invalid data: %s', self.client.num_serial, self._buffer)
 
     @staticmethod
     def _valid_packet(self, packet):
@@ -483,12 +483,15 @@ class WiLightClient:
         self.reconnect_callback = reconnect_callback
         self.status_callbacks = {}
         self.states = {}
-        self.lock = None
-
-    async def setup(self):
-        """Set up the connection with automatic retry."""
+#        self.lock = None
         self.lock = asyncio.Lock()
+
+    async def setup(self, reconnect):
+        """Set up the connection with automatic retry."""
+#        if self.lock is None:
+#            self.lock = asyncio.Lock()
         while True:
+            self.is_connected = False
             fut = self.loop.create_connection(
                 lambda: WiLightProtocol(
                     self,
@@ -496,9 +499,13 @@ class WiLightClient:
                     loop=self.loop, logger=self.logger),
                 host=self.host,
                 port=self.port)
+            timeout_used = self.timeout
+            if reconnect:
+                timeout_used = self.reconnect_interval
             try:
                 self.transport, self.protocol = \
-                    await asyncio.wait_for(fut, timeout=self.timeout)
+#                    await asyncio.wait_for(fut, timeout=self.timeout)
+                    await asyncio.wait_for(fut, timeout=timeout_used)
             except asyncio.TimeoutError:
                 self.logger.warning("Could not connect due to timeout error.")
             except OSError as exc:
@@ -509,12 +516,15 @@ class WiLightClient:
                 if self.reconnect_callback:
                     self.reconnect_callback()
                 break
-            await asyncio.sleep(self.reconnect_interval)
+            if !reconnect:
+                break
+#            await asyncio.sleep(self.reconnect_interval)
+            await asyncio.sleep(0.1)
 
     def stop(self):
         """Shut down transport."""
         self.reconnect = False
-        self.logger.debug("Shutting down.")
+#        self.logger.debug("Shutting down.")
         if self.transport:
             self.transport.close()
 
@@ -524,8 +534,8 @@ class WiLightClient:
         if self.disconnect_callback:
             self.disconnect_callback()
         if self.reconnect:
-            self.logger.debug("Protocol disconnected...reconnecting")
-            await self.setup()
+#            self.logger.debug("Protocol disconnected...reconnecting")
+            await self.setup(True)
             self.protocol.reset_cmd_timeout()
             packet = self.protocol.format_packet("000000", self.num_serial)
             await self._send(packet)
@@ -535,6 +545,10 @@ class WiLightClient:
         if self.status_callbacks.get(index, None) is None:
             self.status_callbacks[index] = []
         self.status_callbacks[index].append(callback)
+
+    @property
+    def is_connected(self):
+        return self._is_connected
 
     async def _send(self, packet):
         """Add packet to send queue."""

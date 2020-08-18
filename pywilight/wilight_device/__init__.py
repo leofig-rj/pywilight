@@ -81,7 +81,7 @@ class Device(object):
                             reconnect_interval = DEFAULT_RECONNECT_INTERVAL,
                             keep_alive_interval = DEFAULT_KEEP_ALIVE_INTERVAL)
 
-        await self._client.setup()
+        await self._client.setup(False)
 
         return self._client
 

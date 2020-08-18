@@ -35,6 +35,9 @@ def discover_devices(ssdp_st=None, max_devices=None,
 
     return wilights
 
+def device_from_host(host):
+    url = f"http://{host}:45995/wilight.xml"
+    return device_from_description(url, None)
 
 def device_from_description(description_url, serialNumber, rediscovery_enabled=True):
     """Return object representing WiLight device running at host, else None."""
