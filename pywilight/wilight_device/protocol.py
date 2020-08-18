@@ -504,7 +504,6 @@ class WiLightClient:
                 timeout_used = self.reconnect_interval
             try:
                 self.transport, self.protocol = \
-#                    await asyncio.wait_for(fut, timeout=self.timeout)
                     await asyncio.wait_for(fut, timeout=timeout_used)
             except asyncio.TimeoutError:
                 self.logger.warning("Could not connect due to timeout error.")
