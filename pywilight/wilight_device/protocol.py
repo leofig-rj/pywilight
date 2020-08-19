@@ -1,6 +1,6 @@
 """WiLight Protocol Support."""
 import asyncio
-from asgiref.sync import async_to_sync
+import syncasync
 from collections import deque
 import logging
 import codecs
