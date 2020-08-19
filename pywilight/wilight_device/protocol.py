@@ -523,8 +523,12 @@ class WiLightClient:
 #            await asyncio.sleep(self.reconnect_interval)
 #            await asyncio.sleep(0.1)
             self.reconnect_timer = self.loop.call_later(self.reconnect_interval,
-                                                 self.setup, True)
+                                                        self._reconnect)
             break
+
+    def _reconnect(self):
+        """Shut down transport."""
+        await self.setup(True)
 
     def stop(self):
         """Shut down transport."""
