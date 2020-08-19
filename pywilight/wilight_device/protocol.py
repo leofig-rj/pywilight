@@ -485,6 +485,7 @@ class WiLightClient:
         self.states = {}
 #        self.lock = None
         self.lock = asyncio.Lock()
+        self.reconnect_timer = None
 
     async def setup(self, reconnect):
         """Set up the connection with automatic retry."""
@@ -492,6 +493,8 @@ class WiLightClient:
 #            self.lock = asyncio.Lock()
         while True:
             self.is_connected = False
+            if self.reconnect_timer:
+                self.reconnect_timer.cancel()
             fut = self.loop.create_connection(
                 lambda: WiLightProtocol(
                     self,
@@ -500,8 +503,8 @@ class WiLightClient:
                 host=self.host,
                 port=self.port)
             timeout_used = self.timeout
-            if reconnect:
-                timeout_used = self.reconnect_interval
+#            if reconnect:
+#                timeout_used = self.reconnect_interval
             try:
                 self.transport, self.protocol = \
                     await asyncio.wait_for(fut, timeout=timeout_used)
@@ -517,8 +520,11 @@ class WiLightClient:
                 break
             if not reconnect:
                 break
-            await asyncio.sleep(self.reconnect_interval)
+#            await asyncio.sleep(self.reconnect_interval)
 #            await asyncio.sleep(0.1)
+            self.reconnect_timer = self.loop.call_later(self.reconnect_interval,
+                                                 self.setup, True)
+            break
 
     def stop(self):
         """Shut down transport."""
