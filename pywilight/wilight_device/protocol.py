@@ -1,6 +1,5 @@
 """WiLight Protocol Support."""
 import asyncio
-import syncasync
 from collections import deque
 import logging
 import codecs
@@ -529,7 +528,7 @@ class WiLightClient:
 
     def _reconnect(self):
         """Shut down transport."""
-        async_to_sync(self.setup)(True)
+        self.loop.run_until_complete(self.setup(True))
 
     def stop(self):
         """Shut down transport."""
