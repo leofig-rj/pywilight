@@ -528,7 +528,7 @@ class WiLightClient:
 
     def _reconnect(self):
         """Shut down transport."""
-        await self.setup(True)
+        async_to_sync(self.setup)(True)
 
     def stop(self):
         """Shut down transport."""
