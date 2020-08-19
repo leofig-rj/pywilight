@@ -526,9 +526,13 @@ class WiLightClient:
                                                         self._reconnect)
             break
 
-    async def _reconnect(self):
+    def _reconnect(self):
         """Reconnect transport."""
-        await self.setup(True)
+        future = asyncio.tasks.ensure_future(self.setup(True), loop=self.loop)
+        while not future.done() and not future.cancelled():
+            self._run_once()
+            if self._stopping:
+                break
 
     def stop(self):
         """Shut down transport."""
