@@ -551,7 +551,7 @@ class WiLightClient:
         """Add packet to send queue."""
         self._protocol.reset_cmd_timeout()
         async with self._lock:
-            self._protocol.transport.write(packet)
+            self._protocol._transport.write(packet)
             await asyncio.sleep(0.1)
 
     async def turn_on(self, index=None):
