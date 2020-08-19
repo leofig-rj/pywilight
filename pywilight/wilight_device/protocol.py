@@ -530,7 +530,6 @@ class WiLightClient:
         """Reconnect transport."""
         future = asyncio.tasks.ensure_future(self.setup(True), loop=self.loop)
         while not future.done() and not future.cancelled():
-            self._run_once()
             if self._stopping:
                 break
 
