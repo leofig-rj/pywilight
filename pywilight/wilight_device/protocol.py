@@ -546,8 +546,8 @@ class WiLightClient:
         self.status_callbacks[index].append(callback)
 
     @property
-    def is_connected(self):
-        return self._is_connected
+    def connected(self):
+        return self.is_connected
 
     async def _send(self, packet):
         """Add packet to send queue."""
