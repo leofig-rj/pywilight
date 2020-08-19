@@ -517,8 +517,8 @@ class WiLightClient:
                 break
             if not reconnect:
                 break
-#            await asyncio.sleep(self.reconnect_interval)
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(self.reconnect_interval)
+#            await asyncio.sleep(0.1)
 
     def stop(self):
         """Shut down transport."""
