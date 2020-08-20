@@ -485,36 +485,34 @@ class WiLightClient:
 
     async def setup(self, can_reconnect):
         """Set up the connection with automatic retry."""
-        while True:
-            self._is_connected = False
-            if self._reconnect_timer:
-                self._reconnect_timer.cancel()
-            fut = self._loop.create_connection(
-                lambda: WiLightProtocol(
-                    self,
-                    disconnect_callback=self.handle_disconnect_callback,
-                    loop=self._loop,
-                    logger=self._logger),
-                host=self._host,
-                port=self._port)
-            try:
-                self._transport, self._protocol = \
-                    await asyncio.wait_for(fut, timeout=self._timeout)
-            except asyncio.TimeoutError:
-                self._logger.warning("Could not connect due to timeout error.")
-            except OSError as exc:
-                self._logger.warning("Could not connect due to error: %s",
-                                    str(exc))
-            else:
-                self._is_connected = True
-                if self._reconnect_callback:
-                    self._reconnect_callback()
-                break
-            if not can_reconnect:
-                break
-            self._reconnect_timer = self._loop.call_later(self._reconnect_interval,
-                                                          self.do_reconnect)
-            break
+        self._is_connected = False
+        if self._reconnect_timer:
+            self._reconnect_timer.cancel()
+        fut = self._loop.create_connection(
+            lambda: WiLightProtocol(
+                self,
+                disconnect_callback=self.handle_disconnect_callback,
+                loop=self._loop,
+                logger=self._logger),
+            host=self._host,
+            port=self._port)
+        try:
+            self._transport, self._protocol = \
+                await asyncio.wait_for(fut, timeout=self._timeout)
+        except asyncio.TimeoutError:
+            self._logger.warning("Could not connect due to timeout error.")
+        except OSError as exc:
+            self._logger.warning("Could not connect due to error: %s",
+                                str(exc))
+        else:
+            self._is_connected = True
+            if self._reconnect_callback:
+                self._reconnect_callback()
+        if can_reconnect and not self._is_connected:
+            self._reconnect_timer = self._loop.call_later(
+                self._reconnect_interval,
+                self.do_reconnect
+            )
 
     def do_reconnect(self):
         """Reconnect transport."""
