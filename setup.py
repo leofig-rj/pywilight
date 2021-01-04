@@ -17,6 +17,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url='https://github.com/leofig-rj/pywilight',
+    install_requires = ['requests', 'ifaddr'],
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
