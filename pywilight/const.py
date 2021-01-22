@@ -40,7 +40,12 @@ COVER_V1 = "cover_v1"
 SUPPORT_NONE = 0
 
 # Fan status
-DIRECTION_OFF = "off"
+WL_DIRECTION_OFF = "off"
+WL_DIRECTION_FORWARD = "forward"
+WL_DIRECTION_REVERSE = "reverse"
+WL_SPEED_HIGH = "high"
+WL_SPEED_LOW = "low"
+WL_SPEED_MEDIUM = "medium"
 
 # Cover commands
 COVER_OPEN = "open"

@@ -5,7 +5,15 @@ import logging
 import codecs
 import binascii
 
-from ..const import WL_MODELS
+from ..const import (
+    WL_MODELS,
+    WL_DIRECTION_OFF,
+    WL_DIRECTION_FORWARD,
+    WL_DIRECTION_REVERSE,
+    WL_SPEED_HIGH,
+    WL_SPEED_LOW,
+    WL_SPEED_MEDIUM
+)
 from .support import (
     check_config_ex_len,
     get_item_sub_types,
@@ -288,16 +296,16 @@ class WiLightProtocol(asyncio.Protocol):
 
             elif index == 1:
 
-                direction = "off"
+                direction = WL_DIRECTION_OFF
                 if (packet[24:25] == b'0'):
-                    direction = "forward"
+                    direction = WL_DIRECTION_FORWARD
                 if (packet[24:25] == b'2'):
-                    direction = "reverse"
-                speed = "low"
+                    direction = WL_DIRECTION_REVERSE
+                speed = WL_SPEED_LOW
                 if (packet[25:26] == b'1'):
-                    speed = "medium"
+                    speed = WL_SPEED_MEDIUM
                 if (packet[25:26] == b'2'):
-                    speed = "high"
+                    speed = WL_SPEED_HIGH
                 states[format(index, 'x')] = {"direction": direction, "speed": speed}
                 changed = False
                 if ("direction" in client_state):
@@ -602,11 +610,11 @@ class WiLightClient:
         """Set fan direction."""
         if (index is not None and direction is not None):
             command = "000000"
-            if direction == "forward":
+            if direction == WL_DIRECTION_FORWARD:
                 command = "003000"
-            elif direction == "off":
+            elif direction == WL_DIRECTION_OFF:
                 command = "004000"
-            elif direction == "reverse":
+            elif direction == WL_DIRECTION_REVERSE:
                 command = "005000"
             packet = self._protocol.format_packet(command, self._num_serial)
         else:
@@ -617,11 +625,11 @@ class WiLightClient:
         """Set fan speed."""
         if (index is not None and speed is not None):
             command = "000000"
-            if speed == "low":
+            if speed == WL_SPEED_LOW:
                 command = "006000"
-            elif speed == "medium":
+            elif speed == WL_SPEED_MEDIUM:
                 command = "007000"
-            elif speed == "high":
+            elif speed == WL_SPEED_HIGH:
                 command = "008000"
             packet = self._protocol.format_packet(command, self._num_serial)
         else:
