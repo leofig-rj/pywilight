@@ -6,7 +6,7 @@ import setuptools
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
-version = '0.0.66'
+version = '0.0.67'
 
 setuptools.setup(
     name="pywilight",

@@ -12,7 +12,13 @@ from ..const import (
     WL_DIRECTION_REVERSE,
     WL_SPEED_HIGH,
     WL_SPEED_LOW,
-    WL_SPEED_MEDIUM
+    WL_SPEED_MEDIUM,
+    WL_CLOSE,
+    WL_CLOSING,
+    WL_OPEN,
+    WL_OPENING,
+    WL_STOP,
+    WL_STOPPED,
 )
 from .support import (
     check_config_ex_len,
@@ -240,11 +246,11 @@ class WiLightProtocol(asyncio.Protocol):
             client_state = self._client._states.get(format(index, 'x'), None)
             if client_state is None:
                 client_state = {}
-            motor_state = "stopped"
+            motor_state = WL_STOPPED
             if (packet[23:24] == b'1'):
-                motor_state = "opening"
+                motor_state = WL_OPENING
             if (packet[23:24] == b'0'):
-                motor_state = "closing"
+                motor_state = WL_CLOSING
             position_target = int(packet[24:27])
             position_current = int(packet[27:30])
             states[format(index, 'x')] = {"motor_state": motor_state, "position_target": position_target, "position_current": position_current}
@@ -640,11 +646,11 @@ class WiLightClient:
         """Send cover command."""
         if (index is not None and cv_command is not None):
             command = "000000"
-            if cv_command == "open":
+            if cv_command == WL_OPEN:
                 command = "001000"
-            elif cv_command == "close":
+            elif cv_command == WL_CLOSE:
                 command = "002000"
-            elif cv_command == "stop":
+            elif cv_command == WL_STOP:
                 command = "003000"
             packet = self._protocol.format_packet(command, self._num_serial)
         else:
@@ -772,14 +778,14 @@ class DummyClient:
     async def cover_command(self, index=None, cv_command=None):
         """Send cover command."""
         if (index is not None and cv_command is not None):
-            if cv_command == "open":
-                motor_state = "opening"
+            if cv_command == WL_OPEN:
+                motor_state = WL_OPENING
                 position_target = 0
-            elif cv_command == "close":
-                motor_state = "closing"
+            elif cv_command == WL_CLOSE:
+                motor_state = WL_CLOSING
                 position_target = 255
-            elif cv_command == "stop":
-                motor_state = "stopped"
+            elif cv_command == WL_STOP:
+                motor_state = WL_STOPPED
                 position_target = 127
             self._status[index]["motor_state"] = motor_state
             self._status[index]["position_target"] = position_target

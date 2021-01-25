@@ -39,7 +39,7 @@ COVER_V1 = "cover_v1"
 # Light service support
 SUPPORT_NONE = 0
 
-# Fan status
+# Fan status / commands
 WL_DIRECTION_OFF = "off"
 WL_DIRECTION_FORWARD = "forward"
 WL_DIRECTION_REVERSE = "reverse"
@@ -48,12 +48,14 @@ WL_SPEED_LOW = "low"
 WL_SPEED_MEDIUM = "medium"
 
 # Cover commands
-COVER_OPEN = "open"
-COVER_CLOSE = "close"
-COVER_STOP = "stop"
+WL_OPEN = "open"
+WL_CLOSE = "close"
+WL_STOP = "stop"
 
 # Cover status
-STATE_MOTOR_STOPPED = "stopped"
+WL_CLOSING = "closing"
+WL_OPENING = "opening"
+WL_STOPPED = "stopped"
 
 WL_MODELS = [
     "0001",
