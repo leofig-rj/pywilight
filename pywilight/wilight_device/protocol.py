@@ -794,7 +794,7 @@ class DummyClient:
 
     async def set_cover_position(self, index=None, position=None):
         if (index is not None and position is not None):
-            self._status[index]["motor_state"] = stopped
+            self._status[index]["motor_state"] = WL_STOPPED
             self._status[index]["position_target"] = position
             self._status[index]["position_current"] = position
             await self._update(index)
