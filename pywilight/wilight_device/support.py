@@ -44,7 +44,7 @@ def check_config_ex_len(model, config_ex):
         if len(config_ex) == 5:
             return True
     elif model == "0110":
-        if len(config_ex) == 3:
+        if len(config_ex) == 11:
             return True
     return False
 
@@ -75,7 +75,10 @@ def get_num_items(model, config_ex):
     elif model == "0107":
         return 1
     elif model == "0110":
-        return 1
+        if config_ex[1:2] == "1":
+            num_items = 2
+        if config_ex[2:3] == "1":
+            num_items = 3
     return num_items
 
 
@@ -123,7 +126,7 @@ def get_item_type(item, model, config_ex):
         if item == 1:
             return ITEM_LIGHT
     elif model == "0110":
-        if item == 1:
+        if item > 0 and item < 4:
             return ITEM_LIGHT
     return ITEM_NONE
 
@@ -162,10 +165,10 @@ def get_item_sub_types(item, model, config_ex):
         if item == 1:
             return LIGHT_COLOR
     elif model == "0110":
-        if item == 1:
-            if config_ex[0] == "0":
+        if item > 0 and item < 4:
+            if config_ex[item + 2 : item + 3] == "0":
                 return LIGHT_ON_OFF
-            elif config_ex[0] == "1":
+            elif config_ex[item + 2 : item + 3] == "1":
                 return LIGHT_DIMMER
     return LIGHT_NONE
 

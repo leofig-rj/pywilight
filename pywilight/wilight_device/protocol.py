@@ -26,6 +26,10 @@ from .support import (
     get_num_items,
     get_states_from_sum_item,
 )
+from .protocol_ex import (
+    codeCmd,
+    decodeData,
+)
 
 class WiLightProtocol(asyncio.Protocol):
     """WiLight device control protocol."""
@@ -76,7 +80,7 @@ class WiLightProtocol(asyncio.Protocol):
     def data_received(self, data):
         """Add incoming data to buffer."""
         self._reset_timeout()
-        self._buffer = data
+        self._buffer = decodeData(data)
         if self._valid_packet(self, self._buffer):
             self._handle_packet(self._buffer)
 
@@ -410,13 +414,13 @@ class WiLightProtocol(asyncio.Protocol):
         """Parse incoming packet."""
         states = {}
         changes = []
-        for index in range(0, 1):
+        for index in range(0, 3):
 
             client_state = self._client._states.get(format(index, 'x'), None)
             if client_state is None:
                 client_state = {}
-            on = (packet[23:24] == b'1')
-            brightness = int(packet[24:27])
+            on = (packet[23+index:24+index] == b'1')
+            brightness = int(packet[26+3*index:29+3*index])
             states[format(index, 'x')] = {"on": on, "brightness": brightness}
             changed = False
             if ("on" in client_state):
@@ -446,8 +450,7 @@ class WiLightProtocol(asyncio.Protocol):
     @staticmethod
     def format_packet(command, num_serial):
         """Format packet to be sent."""
-        frame_header = b"!" + num_serial.encode()
-        return frame_header + command.encode()
+        return codeCmd(command, num_serial)
 
     def connection_lost(self, exc):
         """Log when connection is closed, if needed call callback."""
