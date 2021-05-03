@@ -31,7 +31,6 @@ def codingVectors():
 def cmdInit(numSerie):
     """Command intial."""
 
-    #haID = "9A37B1F272931586"
     ini = '\x1F'
     ini = ini + codingVectors().decode()
     ini = ini + HA_ID
@@ -44,7 +43,7 @@ def codeData(dado):
 
     lenDado = len(dado)
     bufOut = bytearray(dado)
-    codeAplic = bytes(COD_APLIC)
+    codeAplic = COD_APLIC.encode()
 
     vetCod_1 = (bufOut[1] + 1) % 32
     vetCod_2 = bufOut[2] - 47
@@ -110,7 +109,7 @@ def decodeData(dado):
 
     lenDado = len(dado)
     buf = bytearray(dado)
-    codeAplic = bytes(COD_APLIC)
+    codeAplic = COD_APLIC.encode()
 
     vetCod_1 = (buf[1] + 1) % 32
     vetCod_2 = buf[2] - codeAplic[vetCod_1]
