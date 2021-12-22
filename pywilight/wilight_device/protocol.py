@@ -80,6 +80,7 @@ class WiLightProtocol(asyncio.Protocol):
     def data_received(self, data):
         """Add incoming data to buffer."""
         self._reset_timeout()
+        #self._buffer = data
         self._buffer = decodeData(data)
         if self._valid_packet(self, self._buffer):
             self._handle_packet(self._buffer)
@@ -346,7 +347,11 @@ class WiLightProtocol(asyncio.Protocol):
             on = (packet[23+index:24+index] == b'1')
             timer_target = int(packet[25+5*index:30+5*index])
             timer_current = int(packet[35+5*index:40+5*index])
-            states[format(index, 'x')] = {"on": on, "timer_target": timer_target, "timer_current": timer_current}
+            trigger_1 = "" + packet[48+index:56]
+            trigger_2 = "" + packet[56+index:64]
+            trigger_3 = "" + packet[64+index:72]
+            trigger_4 = "" + packet[72+index:80]
+            states[format(index, 'x')] = {"on": on, "timer_target": timer_target, "timer_current": timer_current, "trigger_1": trigger_1, "trigger_2": trigger_2, "trigger_3": trigger_3, "trigger_4": trigger_4}
             changed = False
             if ("on" in client_state):
                 if (client_state["on"] is not on):
@@ -363,9 +368,29 @@ class WiLightProtocol(asyncio.Protocol):
                     changed = True
             else:
                 changed = True
+            if ("trigger_1" in client_state):
+                if (client_state["trigger_1"] != trigger_1):
+                    changed = True
+            else:
+                changed = True
+            if ("trigger_2" in client_state):
+                if (client_state["trigger_2"] != trigger_2):
+                    changed = True
+            else:
+                changed = True
+            if ("trigger_3" in client_state):
+                if (client_state["trigger_3"] != trigger_3):
+                    changed = True
+            else:
+                changed = True
+            if ("trigger_4" in client_state):
+                if (client_state["trigger_4"] != trigger_4):
+                    changed = True
+            else:
+                changed = True
             if changed:
                 changes.append(format(index, 'x'))
-                self._client._states[format(index, 'x')] = {"on": on, "timer_target": timer_target, "timer_current": timer_current}
+                self._client._states[format(index, 'x')] = {"on": on, "timer_target": timer_target, "timer_current": timer_current, "trigger_1": trigger_1, "trigger_2": trigger_2, "trigger_3": trigger_3, "trigger_4": trigger_4}
 
         self._handle_packet_end(states, changes)
 
@@ -450,6 +475,7 @@ class WiLightProtocol(asyncio.Protocol):
     @staticmethod
     def format_packet(command, num_serial):
         """Format packet to be sent."""
+        #return b"!" + num_serial.encode() + command.encode()
         return codeCmd(command, num_serial)
 
     def connection_lost(self, exc):
@@ -679,6 +705,42 @@ class WiLightClient:
             packet = self._protocol.format_packet("000000", self._num_serial)
         await self._send(packet)
 
+    async def set_switch_trigger_1(self, index=None, trigger=None):
+        """Set switch trigger 1."""
+        if (trigger is not None and (len(trigger) === 8)):
+            command = "020008" + trigger
+            packet = self._protocol.format_packet(command, self._num_serial)
+        else:
+            packet = self._protocol.format_packet("000000", self._num_serial)
+        await self._send(packet)
+
+    async def set_switch_trigger_2(self, index=None, trigger=None):
+        """Set switch trigger 2."""
+        if (trigger is not None and (len(trigger) === 8)):
+            command = "021008" + trigger
+            packet = self._protocol.format_packet(command, self._num_serial)
+        else:
+            packet = self._protocol.format_packet("000000", self._num_serial)
+        await self._send(packet)
+
+    async def set_switch_trigger_3(self, index=None, trigger=None):
+        """Set switch trigger 3."""
+        if (trigger is not None and (len(trigger) === 8)):
+            command = "022008" + trigger
+            packet = self._protocol.format_packet(command, self._num_serial)
+        else:
+            packet = self._protocol.format_packet("000000", self._num_serial)
+        await self._send(packet)
+
+    async def set_switch_trigger_4(self, index=None, trigger=None):
+        """Set switch trigger 4."""
+        if (trigger is not None and (len(trigger) === 8)):
+            command = "023008" + trigger
+            packet = self._protocol.format_packet(command, self._num_serial)
+        else:
+            packet = self._protocol.format_packet("000000", self._num_serial)
+        await self._send(packet)
+
     async def status(self, index=None):
         """Get current device status."""
         packet = self._protocol.format_packet("000000", self._num_serial)
@@ -815,4 +877,28 @@ class DummyClient:
     async def set_switch_time(self, index=None, target_time=None):
         if (index is not None and target_time is not None):
             self._status[index]["timer_target"] = target_time
+            await self._update(index)
+
+    async def set_switch_trigger_1(self, index=None, trigger=None):
+        """Set switch trigger 1."""
+        if (trigger is not None and (len(trigger) === 8)):
+            self._status[index]["trigger_1"] = trigger
+            await self._update(index)
+
+    async def set_switch_trigger_2(self, index=None, trigger=None):
+        """Set switch trigger 2."""
+        if (trigger is not None and (len(trigger) === 8)):
+            self._status[index]["trigger_2"] = trigger
+            await self._update(index)
+
+    async def set_switch_trigger_3(self, index=None, trigger=None):
+        """Set switch trigger 3."""
+        if (trigger is not None and (len(trigger) === 8)):
+            self._status[index]["trigger_3"] = trigger
+            await self._update(index)
+
+    async def set_switch_trigger_4(self, index=None, trigger=None):
+        """Set switch trigger 4."""
+        if (trigger is not None and (len(trigger) === 8)):
+            self._status[index]["trigger_4"] = trigger
             await self._update(index)
