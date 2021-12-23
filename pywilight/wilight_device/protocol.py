@@ -347,10 +347,10 @@ class WiLightProtocol(asyncio.Protocol):
             on = (packet[23+index:24+index] == b'1')
             timer_target = int(packet[25+5*index:30+5*index])
             timer_current = int(packet[35+5*index:40+5*index])
-            trigger_1 = "" + packet[48+index:56]
-            trigger_2 = "" + packet[56+index:64]
-            trigger_3 = "" + packet[64+index:72]
-            trigger_4 = "" + packet[72+index:80]
+            trigger_1 = "" + packet[48+index:56].decode()
+            trigger_2 = "" + packet[56+index:64].decode()
+            trigger_3 = "" + packet[64+index:72].decode()
+            trigger_4 = "" + packet[72+index:80].decode()
             states[format(index, 'x')] = {"on": on, "timer_target": timer_target, "timer_current": timer_current, "trigger_1": trigger_1, "trigger_2": trigger_2, "trigger_3": trigger_3, "trigger_4": trigger_4}
             changed = False
             if ("on" in client_state):
