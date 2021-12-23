@@ -707,7 +707,7 @@ class WiLightClient:
 
     async def set_switch_trigger_1(self, index=None, trigger=None):
         """Set switch trigger 1."""
-        if (trigger is not None and (len(trigger) === 8)):
+        if (trigger is not None and (len(trigger) == 8)):
             command = "020008" + trigger
             packet = self._protocol.format_packet(command, self._num_serial)
         else:
@@ -716,7 +716,7 @@ class WiLightClient:
 
     async def set_switch_trigger_2(self, index=None, trigger=None):
         """Set switch trigger 2."""
-        if (trigger is not None and (len(trigger) === 8)):
+        if (trigger is not None and (len(trigger) == 8)):
             command = "021008" + trigger
             packet = self._protocol.format_packet(command, self._num_serial)
         else:
@@ -725,7 +725,7 @@ class WiLightClient:
 
     async def set_switch_trigger_3(self, index=None, trigger=None):
         """Set switch trigger 3."""
-        if (trigger is not None and (len(trigger) === 8)):
+        if (trigger is not None and (len(trigger) == 8)):
             command = "022008" + trigger
             packet = self._protocol.format_packet(command, self._num_serial)
         else:
@@ -734,7 +734,7 @@ class WiLightClient:
 
     async def set_switch_trigger_4(self, index=None, trigger=None):
         """Set switch trigger 4."""
-        if (trigger is not None and (len(trigger) === 8)):
+        if (trigger is not None and (len(trigger) == 8)):
             command = "023008" + trigger
             packet = self._protocol.format_packet(command, self._num_serial)
         else:
@@ -881,24 +881,24 @@ class DummyClient:
 
     async def set_switch_trigger_1(self, index=None, trigger=None):
         """Set switch trigger 1."""
-        if (trigger is not None and (len(trigger) === 8)):
+        if (trigger is not None and (len(trigger) == 8)):
             self._status[index]["trigger_1"] = trigger
             await self._update(index)
 
     async def set_switch_trigger_2(self, index=None, trigger=None):
         """Set switch trigger 2."""
-        if (trigger is not None and (len(trigger) === 8)):
+        if (trigger is not None and (len(trigger) == 8)):
             self._status[index]["trigger_2"] = trigger
             await self._update(index)
 
     async def set_switch_trigger_3(self, index=None, trigger=None):
         """Set switch trigger 3."""
-        if (trigger is not None and (len(trigger) === 8)):
+        if (trigger is not None and (len(trigger) == 8)):
             self._status[index]["trigger_3"] = trigger
             await self._update(index)
 
     async def set_switch_trigger_4(self, index=None, trigger=None):
         """Set switch trigger 4."""
-        if (trigger is not None and (len(trigger) === 8)):
+        if (trigger is not None and (len(trigger) == 8)):
             self._status[index]["trigger_4"] = trigger
             await self._update(index)
