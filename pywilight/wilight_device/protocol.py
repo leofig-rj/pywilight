@@ -24,7 +24,7 @@ from .support import (
     check_config_ex_len,
     get_item_sub_types,
     get_num_items,
-    get_states_from_sum_item,
+    get_states_from_sub_item,
 )
 from .protocol_ex import (
     codeCmd,
@@ -117,6 +117,9 @@ class WiLightProtocol(asyncio.Protocol):
         elif self._client._model == "0110":
             if len(packet) < 40:
                 return False
+        elif self._client._model == "0112":
+            if len(packet) < 30:
+                return False
         b_num_serial = self._client._num_serial.encode()
         for i in range(0, 12):
             if packet[i + 1] != b_num_serial[i]:
@@ -143,6 +146,8 @@ class WiLightProtocol(asyncio.Protocol):
             self._handle_0107_packet(packet)
         elif self._client._model == "0110":
             self._handle_0110_packet(packet)
+        elif self._client._model == "0112":
+            self._handle_0112_packet(packet)
 
     def _handle_0001_packet(self, packet):
         """Parse incoming packet."""
@@ -464,6 +469,29 @@ class WiLightProtocol(asyncio.Protocol):
 
         self._handle_packet_end(states, changes)
 
+    def _handle_0112_packet(self, packet):
+        """Parse incoming packet."""
+        states = {}
+        changes = []
+        for index in range(0, 1):
+
+            client_state = self._client._states.get(format(index, 'x'), None)
+            if client_state is None:
+                client_state = {}
+            on = (packet[23+index:24+index] == b'1')
+            states[format(index, 'x')] = {"on": on}
+            changed = False
+            if ("on" in client_state):
+                if (client_state["on"] is not on):
+                    changed = True
+            else:
+                changed = True
+            if changed:
+                changes.append(format(index, 'x'))
+                self._client._states[format(index, 'x')] = {"on": on}
+
+        self._handle_packet_end(states, changes)
+
     def _handle_packet_end(self, states, changes):
         """Finalizes packet handling."""
         for index in changes:
@@ -772,7 +800,7 @@ class DummyClient:
         for i in range(0, num_items):
             index = f"{i:01x}"
             item_sub_type = get_item_sub_types(i+1, self._model, self._config_ex)
-            state = get_states_from_sum_item(item_sub_type)
+            state = get_states_from_sub_item(item_sub_type)
             status[index] = state
 
         return status

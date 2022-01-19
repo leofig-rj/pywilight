@@ -1,4 +1,4 @@
-"""Base WiLight Device class."""
+"""Base PyWiLightDevice class."""
 
 import collections
 import logging
@@ -33,7 +33,7 @@ from .protocol import WiLightClient, DummyClient  # noqa F401
 _LOGGER = logging.getLogger(__name__)
 
 
-class Device(object):
+class PyWiLightDevice(object):
     """Base object for WiLight devices."""
 
     def __init__(self, host, mac, serial_number, model, swversion, config, key, rediscovery_enabled=True):

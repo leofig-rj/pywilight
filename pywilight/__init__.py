@@ -6,4 +6,5 @@ from .discovery import (
     wilight_from_discovery
 )  # noqa F401
 from .subscribe import SubscriptionRegistry  # noqa F401
+from .wilight_device import PyWiLightDevice  # noqa F401
 from .wilight_device.support import get_components_from_model  # noqa F401

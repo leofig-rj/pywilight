@@ -4,7 +4,7 @@ import requests
 
 from . import ssdp
 from .wilight_device.api.xsd import device as deviceParser
-from .wilight_device import Device
+from .wilight_device import PyWiLightDevice
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -79,6 +79,6 @@ def wilight_from_discovery(location, mac, model_in, serial_number, key,
     swversion = model_config[0][4:16]
     config = model_config[1]
 
-    return Device(host=host, mac=mac, serial_number=serial_number, model=model,
-                    swversion=swversion, config=config,
+    return PyWiLightDevice(host=host, mac=mac, serial_number=serial_number,
+                    model=model, swversion=swversion, config=config,
                     key=key, rediscovery_enabled=rediscovery_enabled)
